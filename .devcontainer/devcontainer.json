@@ -1,0 +1,37 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+  "name": "Rexbole",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "app",
+  "runServices": ["app", "database", "cache"],
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/devcontainers-contrib/features/poetry:2": {}
+  },
+  "workspaceFolder": "/workspace",
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "poetry install",
+
+  //   Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bradlc.vscode-tailwindcss",
+        "bruno-api-client.bruno",
+        "dbaeumer.vscode-eslint",
+        "eamodio.gitlens",
+        "editorconfig.editorconfig",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "extensions.verifySignature": false
+      }
+    }
+  }
+
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  //   "remoteUser": "root"
+}
