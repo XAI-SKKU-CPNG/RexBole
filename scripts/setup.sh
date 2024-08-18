@@ -30,15 +30,19 @@ do
   fi
 done < .env.development
 
-# Enable git auto completion
-
-git config --global --add safe.directory ${BASEDIR}
-echo "source /usr/share/bash-completion/completions/git" >> ~/.bashrc
-
 
 # Backend setup
 cd $BASEDIR/apps/backend/
 
 poetry install
-poetry shell 
-uvicorn --reload --host 127.0.0.1 --port 8000 app.main:app
+
+# Let the DB start
+poetry run python ./app/backend_pre_start.py
+
+# Run migrations
+poetry run alembic upgrade head
+
+# Create initial data in DB
+poetry run python ./app/initial_data.py
+
+poetry run uvicorn --reload --port 8000 --host 127.0.0.1 app.main:app

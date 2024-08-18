@@ -9,14 +9,14 @@
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.12"
     },
-    "ghcr.io/devcontainers-contrib/features/poetry:2": {},
-    "ghcr.io/devcontainers/features/git-lfs:1": {}
+    "ghcr.io/devcontainers-contrib/features/poetry:2": {}
   },
   "workspaceFolder": "/workspace",
 
   // Use 'postCreateCommand' to run commands after the container is created.
   // goto /workspace/apps/backend/ and run poetry install && poetry shell
   "postCreateCommand": "scripts/setup.sh",
+  "postAttachCommand": "git config --global --add safe.directory /workspace",
 
   //   Configure tool-specific properties.
   "customizations": {
@@ -28,7 +28,8 @@
         "eamodio.gitlens",
         "editorconfig.editorconfig",
         "esbenp.prettier-vscode",
-        "ms-azuretools.vscode-docker"
+        "ms-azuretools.vscode-docker",
+        "rangav.vscode-thunder-client"
       ],
       "settings": {
         "extensions.verifySignature": false
