@@ -6,13 +6,16 @@
   "service": "app",
   "runServices": ["app", "database", "cache"],
   "features": {
-    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
     "ghcr.io/devcontainers-contrib/features/poetry:2": {}
   },
   "workspaceFolder": "/workspace",
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "poetry install",
+  // goto /workspace/apps/backend/ and run poetry install && poetry shell
+  "postCreateCommand": "cd /workspace/apps/backend/ && poetry install && poetry shell",
 
   //   Configure tool-specific properties.
   "customizations": {
