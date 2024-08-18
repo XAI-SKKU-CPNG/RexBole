@@ -44,5 +44,3 @@ poetry run alembic upgrade head
 
 # Create initial data in DB
 poetry run python ./app/initial_data.py
-
-poetry run uvicorn --reload --port 8000 --host 127.0.0.1 app.main:app
