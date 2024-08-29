@@ -24,3 +24,16 @@ def test_email(email_to: EmailStr) -> Message:
         html_content=email_data.html_content,
     )
     return Message(message="Test email sent")
+
+
+@router.get(
+    "/test/",
+    status_code=200,
+)
+def test():
+    from app.libs.ReXBole import trigger_run_recbole
+
+    user_inputs = {}
+    trigger_run_recbole(user_inputs)
+
+    return {"message": "Hello World"}
