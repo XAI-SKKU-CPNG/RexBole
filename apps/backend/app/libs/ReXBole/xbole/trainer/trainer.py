@@ -24,6 +24,7 @@ from recbole.utils import (
     # WandbLogger,
 )
 
+
 class AbstractTrainer(object):
     def __init__(self, config, model_name, recommender):
         """_summary_
@@ -35,18 +36,19 @@ class AbstractTrainer(object):
         self.config = config
         self.model_name = model_name
         self.recommender = recommender
-    
+
     def load_explainer(self):
         """
         Load explainer and save as self.model
         """
-        
+
         raise NotImplementedError
+
     def train(self, train_data):
         """
         """
         raise NotImplementedError
-    
+
     def evaluate(self, eval_data):
         """
         """
@@ -57,28 +59,34 @@ class LXR_Trainer(AbstractTrainer):
     def __init__(self, config, model_name, recommender):
         super(LXR_Trainer, self).__init__(config, model_name, recommender)
 
-        self.optim = config["optim"] # optimizer
+        self.optim = config["optim"]  # optimizer
         self.lr = config["lr"]
         self.epochs = config['epochs']
         self.train_batch_size = config['train_batch_size']
-        self.checkpoint = config["checkpoint"] # 모델 파일명, 아직 불러오는 로직은 구현안함
+        self.checkpoint = config["checkpoint"]  # 모델 파일명, 아직 불러오는 로직은 구현안함
         self.weight_decay = config["weight_decay"]
         self.loss = config["loss_function"]
 
-        self.device = torch.device("cuda" if torch.cuda.is_available() and config["device"] == "cuda" else "cpu")
-        self.enable_scaler = torch.cuda.is_available() and config["enable_scaler"] and self.device =="cuda"
+        self.device = torch.device(
+            "cuda" if torch.cuda.is_available() and config["device"] == "cuda" else "cpu")
+        self.enable_scaler = torch.cuda.is_available(
+        ) and config["enable_scaler"] and self.device == "cuda"
         self.enable_amp = config["enable_amp"]
 
         self.eval_batch_size = config['eval_batch_size']
-        self.eval_step = min(config["eval_step"], self.epochs) # evaluate 할 epoch 주기, -1이면 eval disabled
+        # evaluate 할 epoch 주기, -1이면 eval disabled
+        self.eval_step = min(config["eval_step"], self.epochs)
         self.valid_metric = config["valid_metric"].lower()
-        self.best_valid_score = -np.inf if config['valid_metric_bigger'] else np.inf
+        self.best_valid_score = - \
+            np.inf if config['valid_metric_bigger'] else np.inf
 
-        self.checkpoint_dir = config["checkpoint_dir"] # default to "saved"
+        self.checkpoint_dir = config["checkpoint_dir"]  # default to "saved"
         ensure_dir(self.checkpoint_dir)
-        saved_model_file = "{}-{}.pth".format(self.config["model"], get_local_time())
-        self.saved_model_file = os.path.join(self.checkpoint_dir, saved_model_file)
-        self.save_model = config['save_model'] # t/f, 모델 저장할지 안할지
+        saved_model_file = "{}-{}.pth".format(
+            self.config["model"], get_local_time())
+        self.saved_model_file = os.path.join(
+            self.checkpoint_dir, saved_model_file)
+        self.save_model = config['save_model']  # t/f, 모델 저장할지 안할지
 
         self.model = self._load_explainer()
         self.set_device()
@@ -100,24 +108,29 @@ class LXR_Trainer(AbstractTrainer):
         user_size = self.config['num_items']
         item_size = self.config['num_items']
         hidden_size = self.config['hidden_size']
-        model = getattr(importlib.import_module("xbole.model"), self.model_name + "_Explainer")(self.recommender, user_size, item_size, hidden_size)
+        model = getattr(importlib.import_module("xbole.model"), self.model_name +
+                        "_Explainer")(self.recommender, user_size, item_size, hidden_size)
         return model
 
     def _build_optimizer(self, **kwargs):
         r"""Init the Optimizer
 
         """
-        params = [param for name, param in self.model.named_parameters() if 'recommender' not in name]
+        params = [param for name, param in self.model.named_parameters()
+                  if 'recommender' not in name]
         optim = kwargs.pop("optim", self.optim)
         learning_rate = kwargs.pop("lr", self.lr)
         weight_decay = kwargs.pop("weight_decay", self.weight_decay)
 
         if optim.lower() == "adam":
-            optimizer = torch.optim.Adam(params, lr=learning_rate, weight_decay=weight_decay)
+            optimizer = torch.optim.Adam(
+                params, lr=learning_rate, weight_decay=weight_decay)
         elif optim.lower() == "adamw":
-            optimizer = torch.optim.AdamW(params, lr=learning_rate, weight_decay=weight_decay)
+            optimizer = torch.optim.AdamW(
+                params, lr=learning_rate, weight_decay=weight_decay)
         elif optim.lower() == "sgd":
-            optimizer = torch.optim.SGD(params, lr=learning_rate, weight_decay=weight_decay)
+            optimizer = torch.optim.SGD(
+                params, lr=learning_rate, weight_decay=weight_decay)
         elif optim.lower() == "adagrad":
             optimizer = torch.optim.Adagrad(
                 params, lr=learning_rate, weight_decay=weight_decay
@@ -134,7 +147,7 @@ class LXR_Trainer(AbstractTrainer):
 
     def _build_loss(self, **kwargs):
         loss_func = self.loss
-        loss_func = loss_func.lower() 
+        loss_func = loss_func.lower()
         loss_function = None
 
         if loss_func == 'mse':
@@ -176,7 +189,7 @@ class LXR_Trainer(AbstractTrainer):
             interaction = interaction.to(self.device)
             with torch.autocast(device_type=self.device.type, enabled=self.enable_amp):
                 loss = loss_func(interaction, loss_function)
-            
+
             total_loss += loss.item()
             self._check_nan(loss)
             scaler.scale(loss).backward()
@@ -193,17 +206,18 @@ class LXR_Trainer(AbstractTrainer):
                 train_data, epoch, self.loss_function
             )
             training_end_time = time()
-            print("time : ",  training_end_time-training_start_time, "train_loss : ", train_loss)
+            print("time : ",  training_end_time -
+                  training_start_time, "train_loss : ", train_loss)
 
             # loss관련 로깅 추가
 
             if self.eval_step > 0 and ((epoch+1) % self.eval_step == 0):
                 eval_start_time = time()
-                self.evaluate(eval_data)
+                # self.evaluate(eval_data)
                 eval_end_time = time()
                 # best 나올때마다 save?
                 self._save_checkpoint(epoch)
-            
+
     @torch.no_grad()
     def evaluate(self, eval_data, model_file=None):
         """

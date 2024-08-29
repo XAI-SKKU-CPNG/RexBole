@@ -31,9 +31,16 @@ def test_email(email_to: EmailStr) -> Message:
     status_code=200,
 )
 def test():
-    from app.libs.ReXBole import trigger_run_recbole
+    from app.libs.ReXBole import trigger_run_recbole, trigger_run_xbole
+    import os
+    # from torch.utils.tensorboard import
+    os.system(
+        'tensorboard --logdir=log_tensorboard/BPR-ml-100k-Aug-29-2024_07-39-27-010da5/1724917185.8759904')
 
-    user_inputs = {}
-    trigger_run_recbole(user_inputs)
+    # user_inputs = {
+    #     'model': 'LXR',
+    #     'recommender': 'CDAE-Aug-27-2024_06-19-42.pth'
+    # }
+    # trigger_run_xbole(user_inputs)
 
     return {"message": "Hello World"}
