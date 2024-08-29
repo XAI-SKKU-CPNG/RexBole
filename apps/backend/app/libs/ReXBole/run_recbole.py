@@ -11,7 +11,9 @@ import argparse
 
 from recbole.quick_start import run
 
-if __name__ == "__main__":
+
+
+def trigger_run_recbole(user_args):
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", "-m", type=str, default="BPR", help="name of models")
     parser.add_argument(
@@ -36,9 +38,13 @@ if __name__ == "__main__":
         default=0,
         help="the global rank offset of this group",
     )
-
     args, _ = parser.parse_known_args()
-
+    args_dict = vars(args)
+    for key in user_args.keys():
+        args_dict[key] = user_args[key]
+    
+    
+    args = argparse.Namespace(**args_dict)
     config_file_list = (
         args.config_files.strip().split(" ") if args.config_files else None
     )
@@ -53,3 +59,10 @@ if __name__ == "__main__":
         port=args.port,
         group_offset=args.group_offset,
     )
+
+if __name__ == "__main__":
+    user_inputs={
+        'model':'hihello',
+        'lr': 0.01
+        }
+    trigger_run_recbole(user_inputs)

@@ -220,7 +220,6 @@ class LXR_Trainer(AbstractTrainer):
         total_samples = 0
 
         for batch_idx, interaction in enumerate(eval_data):
-            print(interaction)
             interaction = interaction.to(self.device)
             loss = self.model.calculate_loss(interaction, self.loss_function)
             total_loss += loss.item() * interaction.size(0)
