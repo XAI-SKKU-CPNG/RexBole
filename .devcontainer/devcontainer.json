@@ -14,7 +14,6 @@
   "workspaceFolder": "/workspace",
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  // goto /workspace/apps/backend/ and run poetry install && poetry shell
   "postCreateCommand": "scripts/setup.sh",
   "postAttachCommand": "git config --global --add safe.directory /workspace",
 
