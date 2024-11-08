@@ -8,6 +8,7 @@ from app.models import Item, ItemCreate, ItemOut, ItemsOut, ItemUpdate, Message,
 
 router = APIRouter()
 
+
 @router.get("/", response_model=RecommendationsOut)
 def read_recommendations(
     session: SessionDep, current_user: CurrentUser
@@ -55,4 +56,3 @@ def read_recommendations(
     count = len(recommendations)
 
     return RecommendationsOut(data=recommendations, count=count)
-
