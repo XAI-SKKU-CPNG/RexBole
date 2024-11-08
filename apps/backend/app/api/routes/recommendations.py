@@ -19,16 +19,16 @@ def read_recommendations(
     Retrieve recommended items and explains about recommendation.
     """
 
-
-    user_inputs={
-        'model':'LXR',
+    user_inputs = {
+        'model': 'LXR',
         # 'recommender':'MacridVAE-Sep-08-2024_21-06-08.pth',
-        'recommender':'CDAE-Sep-08-2024_20-39-29.pth',
+        'recommender': 'CDAE-Sep-08-2024_20-39-29.pth',
         'lr': 0.01,
-        'train_batch_size':7
-        }
+        'train_batch_size': 7
+    }
     user_id = 5
-    user_rec_scores, explanation_scores, user_interaction, items_df = get_rec_exp_scores(user_inputs, user_id)
+    user_rec_scores, explanation_scores, user_interaction, items_df = get_rec_exp_scores(
+        user_inputs, user_id)
     """
     ml-100k 기준
     
@@ -38,43 +38,66 @@ def read_recommendations(
     items_df            : items_df[item_id]로 접근
     """
 
-    recommendations = [
-        {
-            "rec_item_id": 54,
-            "explanations": [
-                {
-                    "item_id": 75,
-                    "interaction_type": 0
-                },
-                {
-                    "item_id": 563,
-                    "interaction_type": 2
-                }
-            ]
-        },
-        {
-            "rec_item_id": 7865,
-            "explanations": [
-                {
-                    "item_id": 546,
-                    "interaction_type": 0
-                },
-                {
-                    "item_id": 3836,
-                    "interaction_type": 1
-                }
-            ]
-        }
-    ]
-    for rec in recommendations:
-        statement = select(Item).where(Item.id == rec["rec_item_id"])
-        rec_item = session.exec(statement).one_or_none()
-        rec["rec_item_name"] = rec_item.title if rec_item else "Unknown"
+    sorted_user_rec_scores = sorted(
+        enumerate(user_rec_scores), key=lambda x: x[1])
+    sorted_explanation_scores = sorted(
+        enumerate(explanation_scores), key=lambda x: x[1])
+    rec_num = 6
+    exp_num = 3
+    recommendations = []
+    for rec_idx in range(rec_num):
+        rec_item_id, rec_score = sorted_user_rec_scores[rec_idx]
 
-        for exp in rec["explanations"]:
-            statement = select(Item).where(Item.id == exp["item_id"])
-            exp_item = session.exec(statement).one_or_none()
-            exp["item_name"] = exp_item.title if exp_item else "Unknown"
+        rec_item = {}
+        rec_item['rec_item_id'] = rec_item_id
+        rec_item_name = (items_df[items_df['item_id'] == str(rec_item_id)])[
+            'movie_title'].iloc[0]
+        rec_item['rec_item_name'] = rec_item_name
+        explanations = []
+
+        for exp_idx in range(exp_num):
+            explaination = {}
+            interaction_item_id = user_interaction[exp_idx]
+            explanation_item_id, _ = sorted_explanation_scores[interaction_item_id]
+            explaination['item_id'] = explanation_item_id
+            explaination['interaction_type'] = 1
+            explaination['item_name'] = (items_df[items_df['item_id'] == str(
+                explanation_item_id)])['movie_title'].iloc[0]
+            # items_df['item_id'] == '2'
+            explanations.append(explaination)
+        rec_item['explanations'] = explanations
+
+        recommendations.append(rec_item)
+
+    # recommendations = [
+    #     {
+    #         "rec_item_id": 54,
+    #         "explanations": [
+    #             {
+    #                 "item_id": 75,
+    #                 "interaction_type": 0
+    #             },
+    #             {
+    #                 "item_id": 563,
+    #                 "interaction_type": 2
+    #             }
+    #         ]
+    #     },
+    #     {
+    #         "rec_item_id": 7865,
+    #         "explanations": [
+    #             {
+    #                 "item_id": 546,
+    #                 "interaction_type": 0
+    #             },
+    #             {
+    #                 "item_id": 3836,
+    #                 "interaction_type": 1
+    #             }
+    #         ]
+    #     }
+    # ]
+
     count = len(recommendations)
 
     return RecommendationsOut(data=recommendations, count=count)
