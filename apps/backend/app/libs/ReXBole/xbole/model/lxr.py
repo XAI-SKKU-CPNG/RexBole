@@ -90,7 +90,8 @@ class LXR_Explainer(AbstractExplainer):
     def prepare_recommender(self, recommender):
         """
         """
-        self.adapter = CDAE_to_LXR()
+        # self.adapter = CDAE_to_LXR()
+        self.adapter = globals()[f'{recommender.__class__.__name__}_to_LXR']()
         self.recommender = self.adapter(recommender)
         
     def forward(self, user_tensor, item_tensor):
@@ -101,8 +102,6 @@ class LXR_Explainer(AbstractExplainer):
         combined_output = torch.cat((user_output, rec_output), dim=-1)
         expl_scores = self.bottleneck(combined_output)
         return expl_scores
-
-
 
 class CDAE_to_LXR(AbstractAdapter):
     """
@@ -120,9 +119,12 @@ class CDAE_to_LXR(AbstractAdapter):
         #     parameter.requires_grad_(False)
         
         def masked_full_sort_predict(self, interaction, mask=None):
+            # print(interaction)
             users = interaction[self.USER_ID]
             items = self.get_rating_matrix(users) # [B, num_items]
             if mask is not None:
+                # print('--------')
+                # print(mask.shape)
                 items = items * mask # 이거 곱하기가 아니라 cartesian product가 돼야하는데..
             predict = self.forward(items, users)
             predict = self.o_act(predict)
@@ -134,6 +136,37 @@ class CDAE_to_LXR(AbstractAdapter):
             Args:
                 interaction (_type_): _description_
             """
+            users = interaction[self.USER_ID]
+            user_history = self.get_rating_matrix(users)
+            return user_history
+
+        recommender.full_sort_predict = masked_full_sort_predict.__get__(recommender)
+        recommender.get_user_embed = get_user_embed.__get__(recommender)
+        # self.recommender.get_item_embed = get_item_embed.__get__(self.recommender)
+        
+        return recommender
+    
+
+class MacridVAE_to_LXR(AbstractAdapter):
+    def __init__(self):
+        super(MacridVAE_to_LXR, self).__init__()
+        
+
+    def adapt_recommender(self, recommender):
+        def masked_full_sort_predict(self, interaction, mask=None):
+            """
+            rating_matrix (B, num_items)
+            인데 eval에선 B가 최대 2?
+            """
+            user = interaction[self.USER_ID]
+            rating_matrix = self.get_rating_matrix(user)
+            if mask is not None:
+                rating_matrix = rating_matrix * mask
+            scores, _, _ = self.forward(rating_matrix)
+            return scores
+
+
+        def get_user_embed(self, interaction):
             users = interaction[self.USER_ID]
             user_history = self.get_rating_matrix(users)
             return user_history

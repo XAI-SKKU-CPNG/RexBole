@@ -1,5 +1,7 @@
 import importlib
+import argparse
 import pandas as pd
+
 from xbole.quick_start import load_data_and_recommender
 from recbole.utils import (
     init_seed
@@ -18,7 +20,65 @@ def get_user_interaction(data, user_id):
                 return interaction[1]
 
 
-def get_rec_exp_scores(args, user_id):
+
+def get_rec_exp_scores(user_args, user_id):
+
+    parser = argparse.ArgumentParser()
+    """
+    # config 객체 쓰지말고 그냥 여기서 끝내야될듯
+    lr, batch_size, hidden_dim? explainer모델마다 필요한거 정리해야됨
+        """
+    parser.add_argument("--model", type=str, default=None,
+                        help="Specifies the name of the explainer model.")
+    parser.add_argument("--recommender", type=str, default=None,
+                        help="Specifies the name of the recommender file.")
+
+    parser.add_argument("--optim", type=str, default="Adam",
+                        help="Specifies the name of the optimizer; defaults to 'Adam'.")
+    parser.add_argument("--lr", type=float, default=0.001,
+                        help="Sets the learning rate.")
+    parser.add_argument("--epochs", type=int, default=100,
+                        help="Defines the number of epochs for training.")
+    parser.add_argument("--hidden_size", type=int, default=64,
+                        help="Defines the hidden size of model.")
+    parser.add_argument("--train_batch_size", type=int,
+                        default=64, help="Sets the batch size for training.")
+    parser.add_argument("--checkpoint", type=str, default=None,
+                        help="Specifies the path for saving the training checkpoint.")
+    parser.add_argument("--weight_decay", type=float,
+                        default=0.0, help="Sets the weight decay factor.")
+
+    parser.add_argument("--loss_function", type=str, default="MSE",
+                        help="Defines the loss function to be used.")
+    parser.add_argument("--device", type=str, choices=[
+                        'cuda', 'cpu'], default="cpu", help="Sets the device for training (either 'cuda' or 'cpu').")
+    parser.add_argument("--enable_scaler", action='store_true',
+                        help="Enables the gradient scaler for mixed precision training.")
+    parser.add_argument("--enable_amp", action='store_true',
+                        help="Enables automatic mixed precision (AMP) training.")
+
+    parser.add_argument("--eval_batch_size", type=int,
+                        default=64, help="Sets the batch size for evaluation.")
+    parser.add_argument("--eval_step", type=int, default=1,
+                        help="Specifies the epoch interval for conducting evaluations.")
+    parser.add_argument("--valid_metric", type=str, default="loss",
+                        help="Specifies the validation metric to be used.")
+    parser.add_argument("--valid_metric_bigger", action='store_true',
+                        help="Determines whether a larger validation metric indicates better performance.")
+
+    parser.add_argument("--checkpoint_dir", type=str, default="saved",
+                        help="Specifies the directory where checkpoints are saved.")
+    parser.add_argument("--save_model", action='store_true',
+                        help="Determines whether to save the model.")
+    args, _ = parser.parse_known_args()
+
+    args_dict = vars(args)
+    for key in user_args.keys():
+        args_dict[key] = user_args[key]
+    
+    args = argparse.Namespace(**args_dict)
+    config = vars(args)
+
     global df_ready, dataset_name, file_path, items_df
     model_name = args.model
     recommender = args.recommender
@@ -27,10 +87,6 @@ def get_rec_exp_scores(args, user_id):
 
     init_seed(recommender_config["seed"], recommender_config["reproducibility"])
     
-
-    config = vars(args)
-
-
     if model_name == "LXR":
         config['num_items'] = train_data.dataset.item_num 
     trainer = getattr(importlib.import_module("xbole.trainer"), model_name + "_Trainer")(config, model_name, recommender)
@@ -55,8 +111,4 @@ def get_rec_exp_scores(args, user_id):
     user_rec_scores = rec_scores[user_id]
     explanation_scores = explanation_scores[user_id]
 
-    # print(user_rec_scores.shape)
-    # print(explanation_scores.shape)
-    # print(user_interaction)
-    # exit()
     return user_rec_scores, explanation_scores, user_interaction, items_df
