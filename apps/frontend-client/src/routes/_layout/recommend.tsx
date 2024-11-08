@@ -176,14 +176,15 @@ function Dashboard() {
                   />
                 </Flex>
               </Box>
-              <Box className="container" marginX="auto" padding={4}>
+              <Box width="full" marginX="auto" padding={4} paddingEnd="40px">
                 <AdBanner />
-                <ProductList
-                  data={recommendations.data}
-                  count={recommendations.count}
-                />
+                <Box width="full" overflow="auto">
+                  <ProductList
+                    data={recommendations.data}
+                    count={recommendations.count}
+                  />
+                </Box>
               </Box>
-              <p>${recommendations.toString()}</p>
             </Box>
           </Container>
         )
