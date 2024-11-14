@@ -98,11 +98,12 @@ def get_rec_exp_scores(user_args, user_id):
     if not df_ready:
         dataset_name = recommender_config['data_path'].split('/')[-1]
         file_path = f'dataset/{dataset_name}/{dataset_name}.item'
-        items_df = pd.read_csv(file_path, sep='\t', names=['imageURL', 'item_id', 'categories', 'title', 'price', 'brand'])
+        items_df = pd.read_csv(file_path, sep='\t', names=[
+                               'imageURL', 'item_id', 'categories', 'title', 'price', 'brand'])
         df_ready = True
 
-    user_interaction_raw = get_user_interaction(test_data, 3)
-    user_interaction = user_interaction_raw[1][user_interaction_raw[0] == 1]
+    user_interaction_raw = get_user_interaction(test_data, 19)
+    user_interaction = user_interaction_raw[1][user_interaction_raw[0] == 0]
 
     for interaction in train_data:
         user_info = interaction

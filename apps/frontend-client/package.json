@@ -25,7 +25,9 @@
     "react-hook-form": "7.49.3",
     "react-icons": "5.0.1",
     "react-query": "3.39.3",
-    "zustand": "4.5.0"
+    "zustand": "4.5.0",
+    "react-ga": "^3.3.1",
+    "react-ga4": "^2.1.0"
   },
   "devDependencies": {
     "@tanstack/router-devtools": "1.19.1",

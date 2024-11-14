@@ -72,9 +72,9 @@ def trigger_run_xbole(user_args):
 
 
 if __name__ == "__main__":
-    user_inputs={
-        'model' :'LXR',
-        'recommender':'CDAE-Nov-14-2024_19-29-32.pth',
+    user_inputs = {
+        'model': 'LXR',
+        'recommender': 'CDAE-Nov-14-2024_10-42-56.pth',
         'lr': 0.01
     }
     trigger_run_xbole(user_inputs)

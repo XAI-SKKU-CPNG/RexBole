@@ -111,7 +111,8 @@ class Dataset(torch.utils.data.Dataset):
         """Load dataset from scratch.
         Initialize attributes firstly, then load data from atomic files, pre-process the dataset lastly.
         """
-        self.logger.debug(set_color(f"Loading {self.__class__} from scratch.", "green"))
+        self.logger.debug(
+            set_color(f"Loading {self.__class__} from scratch.", "green"))
 
         self._get_preset()
         self._get_field_from_config()
@@ -145,8 +146,10 @@ class Dataset(torch.utils.data.Dataset):
                 "USER_ID_FIELD and ITEM_ID_FIELD need to be set at the same time or not set at the same time."
             )
 
-        self.logger.debug(set_color("uid_field", "blue") + f": {self.uid_field}")
-        self.logger.debug(set_color("iid_field", "blue") + f": {self.iid_field}")
+        self.logger.debug(set_color("uid_field", "blue") +
+                          f": {self.uid_field}")
+        self.logger.debug(set_color("iid_field", "blue") +
+                          f": {self.iid_field}")
 
     def _data_processing(self):
         """Data preprocessing, including:
@@ -214,7 +217,8 @@ class Dataset(torch.utils.data.Dataset):
     def _get_download_url(self, url_file, allow_none=False):
         current_path = os.path.dirname(os.path.realpath(__file__))
         with open(
-            os.path.join(current_path, f"../../properties/dataset/{url_file}.yaml")
+            os.path.join(
+                current_path, f"../../properties/dataset/{url_file}.yaml")
         ) as f:
             dataset2url = yaml.load(f.read(), Loader=self.config.yaml_loader)
 
@@ -233,7 +237,8 @@ class Dataset(torch.utils.data.Dataset):
         if self.config["local_rank"] == 0:
             url = self._get_download_url("url")
             self.logger.info(
-                f"Prepare to download dataset [{self.dataset_name}] from [{url}]."
+                f"Prepare to download dataset [{
+                    self.dataset_name}] from [{url}]."
             )
 
             if decide_download(url):
@@ -243,7 +248,8 @@ class Dataset(torch.utils.data.Dataset):
                 os.unlink(path)
 
                 basename = os.path.splitext(os.path.basename(path))[0]
-                rename_atomic_files(self.dataset_path, basename, self.dataset_name)
+                rename_atomic_files(self.dataset_path,
+                                    basename, self.dataset_name)
 
                 self.logger.info("Downloading done.")
             else:
@@ -292,9 +298,11 @@ class Dataset(torch.utils.data.Dataset):
             if not os.path.isfile(inter_feat_path):
                 raise ValueError(f"File {inter_feat_path} not exist.")
 
-            inter_feat = self._load_feat(inter_feat_path, FeatureSource.INTERACTION)
+            inter_feat = self._load_feat(
+                inter_feat_path, FeatureSource.INTERACTION)
             self.logger.debug(
-                f"Interaction feature loaded successfully from [{inter_feat_path}]."
+                f"Interaction feature loaded successfully from [{
+                    inter_feat_path}]."
             )
             self.inter_feat = inter_feat
         else:
@@ -302,9 +310,11 @@ class Dataset(torch.utils.data.Dataset):
             sub_inter_feats = []
             overall_field2seqlen = defaultdict(int)
             for filename in self.benchmark_filename_list:
-                file_path = os.path.join(dataset_path, f"{token}.{filename}.inter")
+                file_path = os.path.join(
+                    dataset_path, f"{token}.{filename}.inter")
                 if os.path.isfile(file_path):
-                    temp = self._load_feat(file_path, FeatureSource.INTERACTION)
+                    temp = self._load_feat(
+                        file_path, FeatureSource.INTERACTION)
                     sub_inter_feats.append(temp)
                     sub_inter_lens.append(len(temp))
                     for field in self.field2seqlen:
@@ -344,7 +354,8 @@ class Dataset(torch.utils.data.Dataset):
         else:
             feat = None
             self.logger.debug(
-                f"[{feat_path}] not found, [{source.value}] features are not loaded."
+                f"[{feat_path}] not found, [{
+                    source.value}] features are not loaded."
             )
 
         if feat is not None and field is None:
@@ -353,7 +364,8 @@ class Dataset(torch.utils.data.Dataset):
             )
         if feat is not None and field not in feat:
             raise ValueError(
-                f"{field_name} must be loaded if {source.value}_feat is loaded."
+                f"{field_name} must be loaded if {
+                    source.value}_feat is loaded."
             )
         if feat is not None:
             feat.drop_duplicates(subset=[field], keep="first", inplace=True)
@@ -382,7 +394,8 @@ class Dataset(torch.utils.data.Dataset):
             if os.path.isfile(feat_path):
                 feat = self._load_feat(feat_path, suf)
             else:
-                raise ValueError(f"Additional feature file [{feat_path}] not found.")
+                raise ValueError(
+                    f"Additional feature file [{feat_path}] not found.")
             setattr(self, f"{suf}_feat", feat)
 
     def _get_load_and_unload_col(self, source):
@@ -416,12 +429,14 @@ class Dataset(torch.utils.data.Dataset):
 
         if load_col and unload_col:
             raise ValueError(
-                f"load_col [{load_col}] and unload_col [{unload_col}] can not be set the same time."
+                f"load_col [{load_col}] and unload_col [{
+                    unload_col}] can not be set the same time."
             )
 
         self.logger.debug(set_color(f"[{source}]: ", "pink"))
         self.logger.debug(set_color("\t load_col", "blue") + f": [{load_col}]")
-        self.logger.debug(set_color("\t unload_col", "blue") + f": [{unload_col}]")
+        self.logger.debug(
+            set_color("\t unload_col", "blue") + f": [{unload_col}]")
         return load_col, unload_col
 
     def _load_feat(self, filepath, source):
@@ -443,7 +458,8 @@ class Dataset(torch.utils.data.Dataset):
         """
         self.logger.debug(
             set_color(
-                f"Loading feature from [{filepath}] (source: [{source}]).", "green"
+                f"Loading feature from [{
+                    filepath}] (source: [{source}]).", "green"
             )
         )
 
@@ -463,7 +479,8 @@ class Dataset(torch.utils.data.Dataset):
             try:
                 ftype = FeatureType(ftype)
             except ValueError:
-                raise ValueError(f"Type {ftype} from field {field} is not supported.")
+                raise ValueError(f"Type {ftype} from field {
+                                 field} is not supported.")
             if load_col is not None and field not in load_col:
                 continue
             if unload_col is not None and field in unload_col:
@@ -506,7 +523,8 @@ class Dataset(torch.utils.data.Dataset):
                 ]
             elif ftype == FeatureType.FLOAT_SEQ:
                 df[field] = [
-                    np.array(list(map(float, filter(None, _.split(seq_separator)))))
+                    np.array(
+                        list(map(float, filter(None, _.split(seq_separator)))))
                     for _ in df[field].values
                 ]
             max_seq_len = max(map(len, df[field].values))
@@ -536,11 +554,14 @@ class Dataset(torch.utils.data.Dataset):
         for alias_name_1, alias_1 in self.alias.items():
             for alias_name_2, alias_2 in self.alias.items():
                 if alias_name_1 != alias_name_2:
-                    intersect = np.intersect1d(alias_1, alias_2, assume_unique=True)
+                    intersect = np.intersect1d(
+                        alias_1, alias_2, assume_unique=True)
                     if len(intersect) > 0:
                         raise ValueError(
-                            f"`alias_of_{alias_name_1}` and `alias_of_{alias_name_2}` "
-                            f"should not have the same field {list(intersect)}."
+                            f"`alias_of_{alias_name_1}` and `alias_of_{
+                                alias_name_2}` "
+                            f"should not have the same field {
+                                list(intersect)}."
                         )
 
         self._rest_fields = self.token_like_fields
@@ -560,17 +581,21 @@ class Dataset(torch.utils.data.Dataset):
         Missing values will be filled later.
         """
         if self.user_feat is not None:
-            new_user_df = pd.DataFrame({self.uid_field: np.arange(self.user_num)})
+            new_user_df = pd.DataFrame(
+                {self.uid_field: np.arange(self.user_num)})
             self.user_feat = pd.merge(
                 new_user_df, self.user_feat, on=self.uid_field, how="left"
             )
-            self.logger.debug(set_color("ordering user features by user id.", "green"))
+            self.logger.debug(
+                set_color("ordering user features by user id.", "green"))
         if self.item_feat is not None:
-            new_item_df = pd.DataFrame({self.iid_field: np.arange(self.item_num)})
+            new_item_df = pd.DataFrame(
+                {self.iid_field: np.arange(self.item_num)})
             self.item_feat = pd.merge(
                 new_item_df, self.item_feat, on=self.iid_field, how="left"
             )
-            self.logger.debug(set_color("ordering item features by item id.", "green"))
+            self.logger.debug(
+                set_color("ordering item features by item id.", "green"))
 
     def _preload_weight_matrix(self):
         """Transfer preload weight features into :class:`numpy.ndarray` with shape ``[id_token_length]``
@@ -584,7 +609,8 @@ class Dataset(torch.utils.data.Dataset):
 
         for preload_id_field, preload_value_field in preload_fields.items():
             if preload_id_field not in self.field2source:
-                raise ValueError(f"Preload id field [{preload_id_field}] not exist.")
+                raise ValueError(
+                    f"Preload id field [{preload_id_field}] not exist.")
             if preload_value_field not in self.field2source:
                 raise ValueError(
                     f"Preload value field [{preload_value_field}] not exist."
@@ -593,8 +619,10 @@ class Dataset(torch.utils.data.Dataset):
             pv_source = self.field2source[preload_value_field]
             if pid_source != pv_source:
                 raise ValueError(
-                    f"Preload id field [{preload_id_field}] is from source [{pid_source}],"
-                    f"while preload value field [{preload_value_field}] is from source [{pv_source}], "
+                    f"Preload id field [{
+                        preload_id_field}] is from source [{pid_source}],"
+                    f"while preload value field [{
+                        preload_value_field}] is from source [{pv_source}], "
                     f"which should be the same."
                 )
 
@@ -602,11 +630,13 @@ class Dataset(torch.utils.data.Dataset):
             value_ftype = self.field2type[preload_value_field]
             if id_ftype != FeatureType.TOKEN:
                 raise ValueError(
-                    f"Preload id field [{preload_id_field}] should be type token, but is [{id_ftype}]."
+                    f"Preload id field [{
+                        preload_id_field}] should be type token, but is [{id_ftype}]."
                 )
             if value_ftype not in {FeatureType.FLOAT, FeatureType.FLOAT_SEQ}:
                 self.logger.warning(
-                    f"Field [{preload_value_field}] with type [{value_ftype}] is not `float` or `float_seq`, "
+                    f"Field [{preload_value_field}] with type [{
+                        value_ftype}] is not `float` or `float_seq`, "
                     f"which will not be handled by preload matrix."
                 )
                 continue
@@ -652,7 +682,8 @@ class Dataset(torch.utils.data.Dataset):
                     dtype = np.int64 if ftype == FeatureType.TOKEN_SEQ else np.float
                     feat[field] = feat[field].apply(
                         lambda x: (
-                            np.array([], dtype=dtype) if isinstance(x, float) else x
+                            np.array([], dtype=dtype) if isinstance(
+                                x, float) else x
                         )
                     )
 
@@ -689,7 +720,8 @@ class Dataset(torch.utils.data.Dataset):
         else:
             return
 
-        self.logger.debug(set_color("Normalized fields", "blue") + f": {fields}")
+        self.logger.debug(
+            set_color("Normalized fields", "blue") + f": {fields}")
 
         for field in fields:
             for feat in self.field2feats(field):
@@ -698,7 +730,8 @@ class Dataset(torch.utils.data.Dataset):
                     mx, mn = max(arr), min(arr)
                     if mx == mn:
                         self.logger.warning(
-                            f"All the same value in [{field}] from [{feat}_feat]."
+                            f"All the same value in [{
+                                field}] from [{feat}_feat]."
                         )
                         arr = 1.0
                     else:
@@ -731,7 +764,8 @@ class Dataset(torch.utils.data.Dataset):
                 if field not in self.field2type:
                     raise ValueError(f"Field [{field}] does not exist.")
                 if field not in self.config["numerical_features"]:
-                    raise ValueError(f"Field [{field}] must be a numerical feature")
+                    raise ValueError(
+                        f"Field [{field}] must be a numerical feature")
                 ftype = self.field2type[field]
                 if ftype != FeatureType.FLOAT and ftype != FeatureType.FLOAT_SEQ:
                     self.logger.warning(
@@ -759,7 +793,8 @@ class Dataset(torch.utils.data.Dataset):
                 for feat in self.field2feats(field):
 
                     def disc(arr, method, bucket):
-                        if method == "ED":  # Equal Distance/Frequency Discretization.
+                        # Equal Distance/Frequency Discretization.
+                        if method == "ED":
                             lower, upper = min(arr), max(arr) + 1e-9
                             if upper != lower:
                                 arr = np.floor(
@@ -767,7 +802,8 @@ class Dataset(torch.utils.data.Dataset):
                                 )
                             else:
                                 self.logger.warning(
-                                    f"All the same value in [{field}] from [{feat}_feat]."
+                                    f"All the same value in [{
+                                        field}] from [{feat}_feat]."
                                 )
                                 arr = np.ones_like(arr) * bucket
 
@@ -777,7 +813,8 @@ class Dataset(torch.utils.data.Dataset):
                             x = np.where(mask, x, arr)
                             _, arr = np.unique(x, return_inverse=True)
                         else:
-                            raise ValueError(f"Method [{method}] does not exist.")
+                            raise ValueError(
+                                f"Method [{method}] does not exist.")
 
                         return arr, int(max(arr) + 1)
 
@@ -822,14 +859,17 @@ class Dataset(torch.utils.data.Dataset):
                 dropped_feat = feat.index[feat[field].isnull()]
                 if len(dropped_feat):
                     self.logger.warning(
-                        f"In {name}_feat, line {list(dropped_feat + 2)}, {field} do not exist, so they will be removed."
+                        f"In {name}_feat, line {
+                            list(dropped_feat + 2)}, {field} do not exist, so they will be removed."
                     )
                     feat.drop(feat.index[dropped_feat], inplace=True)
             if field is not None:
-                dropped_inter = self.inter_feat.index[self.inter_feat[field].isnull()]
+                dropped_inter = self.inter_feat.index[self.inter_feat[field].isnull(
+                )]
                 if len(dropped_inter):
                     self.logger.warning(
-                        f"In inter_feat, line {list(dropped_inter + 2)}, {field} do not exist, so they will be removed."
+                        f"In inter_feat, line {
+                            list(dropped_inter + 2)}, {field} do not exist, so they will be removed."
                     )
                     self.inter_feat.drop(
                         self.inter_feat.index[dropped_inter], inplace=True
@@ -854,12 +894,14 @@ class Dataset(torch.utils.data.Dataset):
                 by=[self.time_field], ascending=True, inplace=True
             )
             self.logger.info(
-                f"Records in original dataset have been sorted by value of [{self.time_field}] in ascending order."
+                f"Records in original dataset have been sorted by value of [{
+                    self.time_field}] in ascending order."
             )
         else:
             self.logger.warning(
                 f"Timestamp field has not been loaded or specified, "
-                f"thus strategy [{keep}] of duplication removal may be meaningless."
+                f"thus strategy [{
+                    keep}] of duplication removal may be meaningless."
             )
         self.inter_feat.drop_duplicates(
             subset=[self.uid_field, self.iid_field], keep=keep, inplace=True
@@ -919,11 +961,13 @@ class Dataset(torch.utils.data.Dataset):
 
             if self.user_feat is not None:
                 dropped_user = self.user_feat[self.uid_field].isin(ban_users)
-                self.user_feat.drop(self.user_feat.index[dropped_user], inplace=True)
+                self.user_feat.drop(
+                    self.user_feat.index[dropped_user], inplace=True)
 
             if self.item_feat is not None:
                 dropped_item = self.item_feat[self.iid_field].isin(ban_items)
-                self.item_feat.drop(self.item_feat.index[dropped_item], inplace=True)
+                self.item_feat.drop(
+                    self.item_feat.index[dropped_item], inplace=True)
 
             dropped_inter = pd.Series(False, index=self.inter_feat.index)
             user_inter = self.inter_feat[self.uid_field]
@@ -975,7 +1019,8 @@ class Dataset(torch.utils.data.Dataset):
             for id_ in feat[field].values:
                 if inter_num[id_] < min_num:
                     ids.add(id_)
-        self.logger.debug(f"[{len(ids)}] illegal_ids_by_inter_num, field=[{field}]")
+        self.logger.debug(
+            f"[{len(ids)}] illegal_ids_by_inter_num, field=[{field}]")
         return ids
 
     def _parse_intervals_str(self, intervals_str):
@@ -1000,14 +1045,18 @@ class Dataset(torch.utils.data.Dataset):
                 and left_bracket in ["(", "["]
                 and right_bracket in [")", "]"]
             ):
-                self.logger.warning(f"{endpoint_pair_str} is an illegal interval!")
+                self.logger.warning(
+                    f"{endpoint_pair_str} is an illegal interval!")
                 continue
 
-            left_point, right_point = float(endpoint_pair[0]), float(endpoint_pair[1])
+            left_point, right_point = float(
+                endpoint_pair[0]), float(endpoint_pair[1])
             if left_point > right_point:
-                self.logger.warning(f"{endpoint_pair_str} is an illegal interval!")
+                self.logger.warning(
+                    f"{endpoint_pair_str} is an illegal interval!")
 
-            endpoints.append((left_bracket, left_point, right_point, right_bracket))
+            endpoints.append(
+                (left_bracket, left_point, right_point, right_bracket))
         return endpoints
 
     def _within_intervals(self, num, intervals):
@@ -1033,7 +1082,8 @@ class Dataset(torch.utils.data.Dataset):
         val_intervals = (
             {} if self.config["val_interval"] is None else self.config["val_interval"]
         )
-        self.logger.debug(set_color("drop_by_value", "blue") + f": val={val_intervals}")
+        self.logger.debug(set_color("drop_by_value", "blue") +
+                          f": val={val_intervals}")
 
         for field, interval in val_intervals.items():
             if field not in self.field2type:
@@ -1052,7 +1102,8 @@ class Dataset(torch.utils.data.Dataset):
                     )
             else:  # token-like field
                 for feat in self.field2feats(field):
-                    feat.drop(feat.index[~feat[field].isin(interval)], inplace=True)
+                    feat.drop(
+                        feat.index[~feat[field].isin(interval)], inplace=True)
 
     def _reset_index(self):
         """Reset index for all feats in :attr:`feat_name_list`."""
@@ -1095,13 +1146,16 @@ class Dataset(torch.utils.data.Dataset):
 
         if self.user_feat is not None:
             remained_uids = self.user_feat[self.uid_field].values
-            remained_inter &= self.inter_feat[self.uid_field].isin(remained_uids)
+            remained_inter &= self.inter_feat[self.uid_field].isin(
+                remained_uids)
 
         if self.item_feat is not None:
             remained_iids = self.item_feat[self.iid_field].values
-            remained_inter &= self.inter_feat[self.iid_field].isin(remained_iids)
+            remained_inter &= self.inter_feat[self.iid_field].isin(
+                remained_iids)
 
-        self.inter_feat.drop(self.inter_feat.index[~remained_inter], inplace=True)
+        self.inter_feat.drop(
+            self.inter_feat.index[~remained_inter], inplace=True)
 
     def _set_label_by_threshold(self):
         """Generate 0/1 labels according to value of features.
@@ -1237,7 +1291,8 @@ class Dataset(torch.utils.data.Dataset):
             raise ValueError(f"Field [{field}] not defined in dataset.")
 
         if (
-            self.field2type[field] in {FeatureType.FLOAT, FeatureType.FLOAT_SEQ}
+            self.field2type[field] in {
+                FeatureType.FLOAT, FeatureType.FLOAT_SEQ}
             and field in self.config["numerical_features"]
         ):
             return self.field2bucketnum[field]
@@ -1401,7 +1456,8 @@ class Dataset(torch.utils.data.Dataset):
             Counter: The counter of different tokens.
         """
         if field not in self.inter_feat:
-            raise ValueError(f"Field [{field}] is not defined in ``inter_feat``.")
+            raise ValueError(
+                f"Field [{field}] is not defined in ``inter_feat``.")
         if self.field2type[field] == FeatureType.TOKEN:
             if isinstance(self.inter_feat, pd.DataFrame):
                 return Counter(self.inter_feat[field].values)
@@ -1536,7 +1592,8 @@ class Dataset(torch.utils.data.Dataset):
         if self.uid_field:
             info.extend(
                 [
-                    set_color("The number of users", "blue") + f": {self.user_num}",
+                    set_color("The number of users", "blue") +
+                    f": {self.user_num}",
                     set_color("Average actions of users", "blue")
                     + f": {self.avg_actions_of_users}",
                 ]
@@ -1544,18 +1601,21 @@ class Dataset(torch.utils.data.Dataset):
         if self.iid_field:
             info.extend(
                 [
-                    set_color("The number of items", "blue") + f": {self.item_num}",
+                    set_color("The number of items", "blue") +
+                    f": {self.item_num}",
                     set_color("Average actions of items", "blue")
                     + f": {self.avg_actions_of_items}",
                 ]
             )
-        info.append(set_color("The number of inters", "blue") + f": {self.inter_num}")
+        info.append(set_color("The number of inters",
+                    "blue") + f": {self.inter_num}")
         if self.uid_field and self.iid_field:
             info.append(
                 set_color("The sparsity of the dataset", "blue")
                 + f": {self.sparsity * 100}%"
             )
-        info.append(set_color("Remain Fields", "blue") + f": {list(self.field2type)}")
+        info.append(set_color("Remain Fields", "blue") +
+                    f": {list(self.field2type)}")
         return "\n".join(info)
 
     def copy(self, new_inter_feat):
@@ -1583,7 +1643,8 @@ class Dataset(torch.utils.data.Dataset):
             for field in unused_fields:
                 if field not in feat:
                     self.logger.warning(
-                        f"Field [{field}] is not in [{feat_name}_feat], which can not be set in `unused_col`."
+                        f"Field [{field}] is not in [{
+                            feat_name}_feat], which can not be set in `unused_col`."
                     )
                     continue
                 self._del_col(feat, field)
@@ -1697,7 +1758,8 @@ class Dataset(torch.utils.data.Dataset):
             list: List of :class:`~Dataset`, whose interaction features has been split.
         """
         self.logger.debug(
-            f"leave one out, group_by=[{group_by}], leave_one_mode=[{leave_one_mode}]"
+            f"leave one out, group_by=[{
+                group_by}], leave_one_mode=[{leave_one_mode}]"
         )
         if group_by is None:
             raise ValueError("leave one out strategy require a group field")
@@ -1721,7 +1783,8 @@ class Dataset(torch.utils.data.Dataset):
             next_index = [next_index[0], [], next_index[1]]
         else:
             raise NotImplementedError(
-                f"The leave_one_mode [{leave_one_mode}] has not been implemented."
+                f"The leave_one_mode [{
+                    leave_one_mode}] has not been implemented."
             )
 
         self._drop_unused_col()
@@ -1769,7 +1832,8 @@ class Dataset(torch.utils.data.Dataset):
             self.sort(by=self.time_field)
         else:
             raise NotImplementedError(
-                f"The ordering_method [{ordering_args}] has not been implemented."
+                f"The ordering_method [{
+                    ordering_args}] has not been implemented."
             )
 
         # splitting & grouping
@@ -1777,14 +1841,16 @@ class Dataset(torch.utils.data.Dataset):
         if split_args is None:
             raise ValueError("The split_args in eval_args should not be None.")
         if not isinstance(split_args, dict):
-            raise ValueError(f"The split_args [{split_args}] should be a dict.")
+            raise ValueError(
+                f"The split_args [{split_args}] should be a dict.")
 
         split_mode = list(split_args.keys())[0]
         assert len(split_args.keys()) == 1
         group_by = self.config["eval_args"]["group_by"]
         if split_mode == "RS":
             if not isinstance(split_args["RS"], list):
-                raise ValueError(f'The value of "RS" [{split_args}] should be a list.')
+                raise ValueError(
+                    f'The value of "RS" [{split_args}] should be a list.')
             if group_by is None or group_by.lower() == "none":
                 datasets = self.split_by_ratio(split_args["RS"], group_by=None)
             elif group_by == "user":
@@ -1793,7 +1859,8 @@ class Dataset(torch.utils.data.Dataset):
                 )
             else:
                 raise NotImplementedError(
-                    f"The grouping method [{group_by}] has not been implemented."
+                    f"The grouping method [{
+                        group_by}] has not been implemented."
                 )
         elif split_mode == "LS":
             datasets = self.leave_one_out(
@@ -1801,7 +1868,8 @@ class Dataset(torch.utils.data.Dataset):
             )
         else:
             raise NotImplementedError(
-                f"The splitting_method [{split_mode}] has not been implemented."
+                f"The splitting_method [{
+                    split_mode}] has not been implemented."
             )
 
         return datasets
@@ -1871,12 +1939,14 @@ class Dataset(torch.utils.data.Dataset):
         else:
             if value_field not in df_feat:
                 raise ValueError(
-                    f"Value_field [{value_field}] should be one of `df_feat`'s features."
+                    f"Value_field [{
+                        value_field}] should be one of `df_feat`'s features."
                 )
             data = df_feat[value_field]
 
         mat = coo_matrix(
-            (data, (src, tgt)), shape=(self.num(source_field), self.num(target_field))
+            (data, (src, tgt)), shape=(
+                self.num(source_field), self.num(target_field))
         )
 
         if form == "coo":
@@ -1934,7 +2004,8 @@ class Dataset(torch.utils.data.Dataset):
             from torch_geometric.data import Data
 
             edge_attr = tensor_feat[value_field] if value_field else None
-            graph = Data(edge_index=torch.stack([src, tgt]), edge_attr=edge_attr)
+            graph = Data(edge_index=torch.stack(
+                [src, tgt]), edge_attr=edge_attr)
             return graph
         else:
             raise NotImplementedError(
@@ -2003,7 +2074,8 @@ class Dataset(torch.utils.data.Dataset):
         else:
             if value_field not in inter_feat:
                 raise ValueError(
-                    f"Value_field [{value_field}] should be one of `inter_feat`'s features."
+                    f"Value_field [{
+                        value_field}] should be one of `inter_feat`'s features."
                 )
             values = inter_feat[value_field].numpy()
 
@@ -2026,7 +2098,8 @@ class Dataset(torch.utils.data.Dataset):
 
         if col_num > max_col_num * 0.2:
             self.logger.warning(
-                f"Max value of {row}'s history interaction records has reached "
+                f"Max value of {
+                    row}'s history interaction records has reached "
                 f"{col_num / max_col_num * 100}% of the total."
             )
 
@@ -2140,8 +2213,10 @@ class Dataset(torch.utils.data.Dataset):
                 else:
                     new_data[k] = torch.FloatTensor(value)
             elif ftype == FeatureType.TOKEN_SEQ:
-                seq_data = [torch.LongTensor(d[: self.field2seqlen[k]]) for d in value]
-                new_data[k] = rnn_utils.pad_sequence(seq_data, batch_first=True)
+                seq_data = [torch.LongTensor(
+                    d[: self.field2seqlen[k]]) for d in value]
+                new_data[k] = rnn_utils.pad_sequence(
+                    seq_data, batch_first=True)
             elif ftype == FeatureType.FLOAT_SEQ:
                 if k in self.config["numerical_features"]:
                     base = [
@@ -2157,5 +2232,6 @@ class Dataset(torch.utils.data.Dataset):
                     seq_data = [
                         torch.FloatTensor(d[: self.field2seqlen[k]]) for d in value
                     ]
-                    new_data[k] = rnn_utils.pad_sequence(seq_data, batch_first=True)
+                    new_data[k] = rnn_utils.pad_sequence(
+                        seq_data, batch_first=True)
         return Interaction(new_data)

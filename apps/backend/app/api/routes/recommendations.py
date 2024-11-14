@@ -22,11 +22,11 @@ def read_recommendations(
     user_inputs = {
         'model': 'LXR',
         # 'recommender':'MacridVAE-Sep-08-2024_21-06-08.pth',
-        'recommender': 'CDAE-Sep-08-2024_20-39-29.pth',
+        'recommender': 'CDAE-Nov-14-2024_11-40-20.pth',
         'lr': 0.01,
         'train_batch_size': 7
     }
-    user_id = 2
+    user_id = 20
     user_rec_scores, explanation_scores, user_interaction, items_df = get_rec_exp_scores(
         user_inputs, user_id)
     """
@@ -50,8 +50,9 @@ def read_recommendations(
 
         rec_item = {}
         rec_item['rec_item_id'] = rec_item_id
-        rec_item_name = (items_df[items_df['item_id'] == str(rec_item_id)])[
-            'movie_title'].iloc[0]
+        print(items_df, rec_item_id)
+        rec_item_name = (items_df[items_df['item_id'] == str(rec_item_id)+'.0'])[
+            'title'].iloc[0]
         rec_item['rec_item_name'] = rec_item_name
         explanations = []
 
@@ -62,7 +63,7 @@ def read_recommendations(
             explaination['item_id'] = explanation_item_id
             explaination['interaction_type'] = 1
             explaination['item_name'] = (items_df[items_df['item_id'] == str(
-                explanation_item_id)])['movie_title'].iloc[0]
+                explanation_item_id)+'.0'])['title'].iloc[0]
             # items_df['item_id'] == '2'
             explanations.append(explaination)
         rec_item['explanations'] = explanations
@@ -98,5 +99,6 @@ def read_recommendations(
     # ]
 
     count = len(recommendations)
+    print(recommendations)
 
     return RecommendationsOut(data=recommendations, count=count)
