@@ -249,6 +249,7 @@ def load_data_and_model(model_file):
 
     checkpoint = torch.load(model_file)
     config = checkpoint["config"]
+    config['device'] = 'cpu'
     init_seed(config["seed"], config["reproducibility"])
     init_logger(config)
     logger = getLogger()
