@@ -69,14 +69,11 @@ def trigger_run_xbole(user_args):
 
 # 2. recbole도 비슷하게 하면됨
 
-# 3. 실제로 프론트에서 보여주기 편하게 .recommend, .explain을 저장하게 해야됨
-# 그걸 실제 아이템이랑 맵핑은 아직 안함(이건 일단 보류)
-# 로깅은
-
 
 if __name__ == "__main__":
     user_inputs={
-        'model':'hihello',
+        'model' :'LXR',
+        'recommender':'CDAE-Nov-14-2024_19-29-32.pth',
         'lr': 0.01
         }
     trigger_run_xbole(user_inputs)

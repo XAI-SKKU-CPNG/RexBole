@@ -92,10 +92,11 @@ def get_rec_exp_scores(user_args, user_id):
     trainer = getattr(importlib.import_module("xbole.trainer"), model_name + "_Trainer")(config, model_name, recommender)
 
 
+    # imageURL:token	item_id::token	categories:token	title:token	price:token	brand:token
     if not df_ready:
         dataset_name = recommender_config['data_path'].split('/')[-1]
         file_path = f'dataset/{dataset_name}/{dataset_name}.item'
-        items_df = pd.read_csv(file_path, sep='\t', names=['item_id', 'movie_title', 'release_year', 'class'])
+        items_df = pd.read_csv(file_path, sep='\t', names=['imageURL', 'item_id', 'categories', 'title', 'price', 'brand'])
         df_ready = True
     
     user_interaction_raw = get_user_interaction(test_data, 3)

@@ -62,7 +62,8 @@ def trigger_run_recbole(user_args):
 
 if __name__ == "__main__":
     user_inputs={
-        'model':'hihello',
+        'model':'CDAE',
+        'dataset' : 'amazon_appliances',
         'lr': 0.01
         }
     trigger_run_recbole(user_inputs)
