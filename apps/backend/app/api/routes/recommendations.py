@@ -38,15 +38,10 @@ def read_recommendations(
     items_df            : items_df[item_id]로 접근
     """
 
-<<<<<<< HEAD
-    sorted_user_rec_scores = sorted(enumerate(user_rec_scores), key=lambda x: x[1])
-    sorted_explanation_scores = sorted(enumerate(explanation_scores), key=lambda x: x[1])
-=======
     sorted_user_rec_scores = sorted(
         enumerate(user_rec_scores), key=lambda x: x[1])
     sorted_explanation_scores = sorted(
         enumerate(explanation_scores), key=lambda x: x[1])
->>>>>>> a87e41bb9be7dffa73af8ff92fdd76b5690f908d
     rec_num = 6
     exp_num = 3
     recommendations = []
@@ -55,41 +50,24 @@ def read_recommendations(
 
         rec_item = {}
         rec_item['rec_item_id'] = rec_item_id
-<<<<<<< HEAD
-        rec_item_name = (items_df[items_df['item_id'] == str(rec_item_id)])['movie_title'].iloc[0]
-=======
         rec_item_name = (items_df[items_df['item_id'] == str(rec_item_id)])[
             'movie_title'].iloc[0]
->>>>>>> a87e41bb9be7dffa73af8ff92fdd76b5690f908d
         rec_item['rec_item_name'] = rec_item_name
         explanations = []
 
         for exp_idx in range(exp_num):
-<<<<<<< HEAD
-            explaination={}
-=======
             explaination = {}
->>>>>>> a87e41bb9be7dffa73af8ff92fdd76b5690f908d
             interaction_item_id = user_interaction[exp_idx]
             explanation_item_id, _ = sorted_explanation_scores[interaction_item_id]
             explaination['item_id'] = explanation_item_id
             explaination['interaction_type'] = 1
-<<<<<<< HEAD
-            explaination['item_name'] = (items_df[items_df['item_id'] == str(explanation_item_id)])['movie_title'].iloc[0]
-=======
             explaination['item_name'] = (items_df[items_df['item_id'] == str(
                 explanation_item_id)])['movie_title'].iloc[0]
->>>>>>> a87e41bb9be7dffa73af8ff92fdd76b5690f908d
             # items_df['item_id'] == '2'
             explanations.append(explaination)
         rec_item['explanations'] = explanations
 
         recommendations.append(rec_item)
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> a87e41bb9be7dffa73af8ff92fdd76b5690f908d
     # recommendations = [
     #     {
     #         "rec_item_id": 54,
@@ -118,10 +96,6 @@ def read_recommendations(
     #         ]
     #     }
     # ]
-<<<<<<< HEAD
-    
-=======
->>>>>>> a87e41bb9be7dffa73af8ff92fdd76b5690f908d
 
     count = len(recommendations)
 
