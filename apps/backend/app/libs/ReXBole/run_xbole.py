@@ -3,6 +3,7 @@ import argparse
 from xbole.quick_start import *
 import pandas as pd
 
+
 def trigger_run_xbole(user_args):
     parser = argparse.ArgumentParser()
     """
@@ -56,7 +57,7 @@ def trigger_run_xbole(user_args):
     args_dict = vars(args)
     for key in user_args.keys():
         args_dict[key] = user_args[key]
-    
+
     args = argparse.Namespace(**args_dict)
     run_xbole(
         args
@@ -75,5 +76,5 @@ if __name__ == "__main__":
         'model' :'LXR',
         'recommender':'CDAE-Nov-14-2024_19-29-32.pth',
         'lr': 0.01
-        }
+    }
     trigger_run_xbole(user_inputs)

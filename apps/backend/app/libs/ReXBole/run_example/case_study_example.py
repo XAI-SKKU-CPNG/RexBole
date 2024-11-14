@@ -29,11 +29,13 @@ if __name__ == "__main__":
     )
     print(topk_score)  # scores of top 10 items
     print(topk_iid_list)  # internal id of top 10 items
-    external_item_list = dataset.id2token(dataset.iid_field, topk_iid_list.cpu())
+    external_item_list = dataset.id2token(
+        dataset.iid_field, topk_iid_list.cpu())
     print(external_item_list)  # external tokens of top 10 items
     print()
 
-    score = full_sort_scores(uid_series, model, test_data, device=config["device"])
+    score = full_sort_scores(
+        uid_series, model, test_data, device=config["device"])
     print(score)  # score of all items
     print(
         score[0, dataset.token2id(dataset.iid_field, ["242", "302"])]

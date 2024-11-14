@@ -134,7 +134,8 @@ def run_recbole(
 
     # model loading and initialization
     init_seed(config["seed"] + config["local_rank"], config["reproducibility"])
-    model = get_model(config["model"])(config, train_data._dataset).to(config["device"])
+    model = get_model(config["model"])(
+        config, train_data._dataset).to(config["device"])
     logger.info(model)
 
     transform = construct_transform(config)
@@ -183,7 +184,8 @@ def run_recboles(rank, *args):
     kwargs = args[-1]
     if not isinstance(kwargs, MutableMapping):
         raise ValueError(
-            f"The last argument of run_recboles should be a dict, but got {type(kwargs)}"
+            f"The last argument of run_recboles should be a dict, but got {
+                type(kwargs)}"
         )
     kwargs["config_dict"] = kwargs.get("config_dict", {})
     kwargs["config_dict"]["local_rank"] = rank
@@ -213,7 +215,8 @@ def objective_function(config_dict=None, config_file_list=None, saved=True):
     train_data, valid_data, test_data = data_preparation(config, dataset)
     init_seed(config["seed"], config["reproducibility"])
     model_name = config["model"]
-    model = get_model(model_name)(config, train_data._dataset).to(config["device"])
+    model = get_model(model_name)(
+        config, train_data._dataset).to(config["device"])
     trainer = get_trainer(config["MODEL_TYPE"], config["model"])(config, model)
     best_valid_score, best_valid_result = trainer.fit(
         train_data, valid_data, verbose=False, saved=saved
@@ -246,10 +249,13 @@ def load_data_and_model(model_file):
             - test_data (AbstractDataLoader): The dataloader for testing.
     """
     import torch
-
-    checkpoint = torch.load(model_file)
+    checkpoint = torch.load(model_file, map_location=torch.device('cpu'))
     config = checkpoint["config"]
+<<<<<<< HEAD
     config['device'] = 'cpu'
+=======
+    config["device"] = 'cpu'
+>>>>>>> a87e41bb9be7dffa73af8ff92fdd76b5690f908d
     init_seed(config["seed"], config["reproducibility"])
     init_logger(config)
     logger = getLogger()
@@ -260,7 +266,8 @@ def load_data_and_model(model_file):
     train_data, valid_data, test_data = data_preparation(config, dataset)
 
     init_seed(config["seed"], config["reproducibility"])
-    model = get_model(config["model"])(config, train_data._dataset).to(config["device"])
+    model = get_model(config["model"])(
+        config, train_data._dataset).to(config["device"])
     model.load_state_dict(checkpoint["state_dict"])
     model.load_other_parameter(checkpoint.get("other_parameter"))
 

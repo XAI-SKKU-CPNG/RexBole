@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-ga": "^3.3.1",
+    "react-ga4": "^2.1.0"
+  }
+}

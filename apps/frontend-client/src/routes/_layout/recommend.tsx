@@ -6,7 +6,6 @@ import {
   Text,
   Spacer,
   IconButton,
-  Image,
   Badge,
   Icon,
   Input,
@@ -53,20 +52,12 @@ function Dashboard() {
           <Container maxW="full" justifyItems="center">
             <Box pt={12} m={4} width={414} height={896}>
               <Box bg="gray.100">
-                {/* 상단바 */}
-                <Box bg="black" color="white" p={2} textAlign="center">
-                  클릭하는 순간,{' '}
-                  <Text as="span" color="yellow.300">
-                    무료 혜택!
-                  </Text>
-                </Box>
-
                 {/* 검색 바 */}
                 <Flex bg="white" align="center" p={2}>
                   <Text
                     fontSize="2xl"
                     fontWeight="bold"
-                    color="orange.400"
+                    color="black.400"
                     ml={2}
                     as="div"
                     margin="auto"
@@ -86,12 +77,6 @@ function Dashboard() {
 
                 {/* 광고 배너 */}
                 <Box p={4} bg="blue.50" textAlign="center">
-                  <Image
-                    src="banner-image-url"
-                    alt="가을 보습 대전"
-                    borderRadius="md"
-                    mb={2}
-                  />
                   <Text fontSize="lg" fontWeight="bold">
                     가을 보습대전
                   </Text>
@@ -128,24 +113,21 @@ function Dashboard() {
                 </Box>
 
                 {/* 상품 추천 섹션 */}
-                <Box p={4}>
+                <Box p={4} bg="white">
                   <Flex align="center">
                     <Text fontSize="lg" fontWeight="bold">
-                      이 상품 놓치지 마세요!
+                      {recommendations.data[0].explanations[0].item_name}을
+                      구매하신 지민님께 추천드리는 상품이에요.
                     </Text>
                     <Spacer />
                     <Text color="blue.500">더보기 &gt;</Text>
                   </Flex>
                   <Flex mt={4} overflowX="scroll">
-                    {/* 상품 이미지 카드들 */}
-                    <Box w="150px" mr={4}>
-                      <Image src="product1-url" borderRadius="md" />
-                    </Box>
-                    <Box w="150px" mr={4}>
-                      <Image src="product2-url" borderRadius="md" />
-                    </Box>
-                    <Box w="150px" mr={4}>
-                      <Image src="product3-url" borderRadius="md" />
+                    <Box width="full" overflow="auto">
+                      <ProductList
+                        data={recommendations.data}
+                        count={recommendations.count}
+                      />
                     </Box>
                   </Flex>
                 </Box>
@@ -177,7 +159,10 @@ function Dashboard() {
                 </Flex>
               </Box>
               <Box width="full" marginX="auto" padding={4} paddingEnd="40px">
-                <AdBanner />
+                <Text fontSize="lg" fontWeight="bold">
+                  {recommendations.data[0].explanations[1].item_name} 와 같이
+                  구매해보세요!
+                </Text>
                 <Box width="full" overflow="auto">
                   <ProductList
                     data={recommendations.data}
@@ -185,6 +170,8 @@ function Dashboard() {
                   />
                 </Box>
               </Box>
+
+              <Box height="500px" width="full" />
             </Box>
           </Container>
         )

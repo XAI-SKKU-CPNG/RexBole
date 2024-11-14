@@ -13,11 +13,26 @@ import {
 } from '@chakra-ui/react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from 'react-query'
+import { useEffect } from 'react'
+import ReactGA from 'react-ga4'
 
 import { ApiError, ItemsService } from '../../client'
 import ActionsMenu from '../../components/Common/ActionsMenu'
 import Navbar from '../../components/Common/Navbar'
 import useCustomToast from '../../hooks/useCustomToast'
+
+// 구글 애널리틱스 초기화
+const initializeGA = () => {
+  const trackingId = import.meta.env.VITE_GA_TRACKING_ID || 'GTM-57XR9LKP';
+  console.log(`Initializing Google Analytics with Tracking ID: ${trackingId}`);
+  ReactGA.initialize(trackingId);
+};
+
+// 페이지뷰 추적
+const trackPageView = () => {
+  console.log('Tracking page view:', window.location.pathname + window.location.search);
+  ReactGA.send({ hitType: 'pageview', page: window.location.pathname + window.location.search });
+};
 
 export const Route = createFileRoute('/_layout/items')({
   component: Items,
@@ -31,6 +46,12 @@ function Items() {
     isError,
     error,
   } = useQuery('items', () => ItemsService.readItems({}))
+
+  useEffect(() => {
+    // 구글 애널리틱스 초기화 및 페이지뷰 추적
+    initializeGA();
+    trackPageView();
+  }, [])
 
   if (isError) {
     const errDetail = (error as ApiError).body?.detail

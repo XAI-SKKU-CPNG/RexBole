@@ -12,13 +12,13 @@ dataset_name = None
 file_path = None
 items_df = None
 
+
 def get_user_interaction(data, user_id):
     for interaction in data:
         user_ids = interaction[0]['user_id']
         for userid in user_ids:
             if userid == user_id:
                 return interaction[1]
-
 
 
 def get_rec_exp_scores(user_args, user_id):
@@ -75,7 +75,7 @@ def get_rec_exp_scores(user_args, user_id):
     args_dict = vars(args)
     for key in user_args.keys():
         args_dict[key] = user_args[key]
-    
+
     args = argparse.Namespace(**args_dict)
     config = vars(args)
 
@@ -83,14 +83,16 @@ def get_rec_exp_scores(user_args, user_id):
     model_name = args.model
     recommender = args.recommender
 
-    recommender_config, recommender, dataset, train_data, valid_data, test_data = load_data_and_recommender(recommender)
+    recommender_config, recommender, dataset, train_data, valid_data, test_data = load_data_and_recommender(
+        recommender)
 
-    init_seed(recommender_config["seed"], recommender_config["reproducibility"])
-    
+    init_seed(recommender_config["seed"],
+              recommender_config["reproducibility"])
+
     if model_name == "LXR":
-        config['num_items'] = train_data.dataset.item_num 
-    trainer = getattr(importlib.import_module("xbole.trainer"), model_name + "_Trainer")(config, model_name, recommender)
-
+        config['num_items'] = train_data.dataset.item_num
+    trainer = getattr(importlib.import_module("xbole.trainer"),
+                      model_name + "_Trainer")(config, model_name, recommender)
 
     # imageURL:token	item_id::token	categories:token	title:token	price:token	brand:token
     if not df_ready:
@@ -98,17 +100,16 @@ def get_rec_exp_scores(user_args, user_id):
         file_path = f'dataset/{dataset_name}/{dataset_name}.item'
         items_df = pd.read_csv(file_path, sep='\t', names=['imageURL', 'item_id', 'categories', 'title', 'price', 'brand'])
         df_ready = True
-    
+
     user_interaction_raw = get_user_interaction(test_data, 3)
-    user_interaction = user_interaction_raw[1][user_interaction_raw[0]==1]
-    
-    
+    user_interaction = user_interaction_raw[1][user_interaction_raw[0] == 1]
+
     for interaction in train_data:
         user_info = interaction
 
         rec_scores = trainer.model.recommender.full_sort_predict(user_info)
         explanation_scores = trainer.model.explain(user_info)
-    
+
     user_rec_scores = rec_scores[user_id]
     explanation_scores = explanation_scores[user_id]
 
