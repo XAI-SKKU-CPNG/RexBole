@@ -116,7 +116,8 @@ function Dashboard() {
                 <Box p={4} bg="white">
                   <Flex align="center">
                     <Text fontSize="lg" fontWeight="bold">
-                      이 상품 놓치지 마세요!
+                      {recommendations.data[0].explanations[0].item_name}을
+                      구매하신 지민님께 추천드리는 상품이에요.
                     </Text>
                     <Spacer />
                     <Text color="blue.500">더보기 &gt;</Text>
@@ -158,7 +159,10 @@ function Dashboard() {
                 </Flex>
               </Box>
               <Box width="full" marginX="auto" padding={4} paddingEnd="40px">
-                <AdBanner />
+                <Text fontSize="lg" fontWeight="bold">
+                  {recommendations.data[0].explanations[1].item_name} 와 같이
+                  구매해보세요!
+                </Text>
                 <Box width="full" overflow="auto">
                   <ProductList
                     data={recommendations.data}

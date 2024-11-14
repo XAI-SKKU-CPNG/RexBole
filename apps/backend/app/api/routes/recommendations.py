@@ -26,7 +26,7 @@ def read_recommendations(
         'lr': 0.01,
         'train_batch_size': 7
     }
-    user_id = 5
+    user_id = 2
     user_rec_scores, explanation_scores, user_interaction, items_df = get_rec_exp_scores(
         user_inputs, user_id)
     """

@@ -45,7 +45,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ recommendation }) => {
       p={4}
       shadow="md"
     >
-      <Box bg="gray.200" h="24" mb={4} borderRadius="md" />
+      <Box bg="gray.200" h="12" mb={4} borderRadius="md" />
 
       <Box
         fontSize="xs"
