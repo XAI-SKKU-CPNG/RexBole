@@ -14,7 +14,6 @@ import { SearchIcon, BellIcon } from '@chakra-ui/icons'
 import { FaShoppingCart } from 'react-icons/fa'
 
 import { createFileRoute } from '@tanstack/react-router'
-import AdBanner from '../../components/Common/AdBanner.tsx'
 import ProductList from '../../components/Common/ProductList.tsx'
 
 import useCustomToast from '../../hooks/useCustomToast.ts'

@@ -54,18 +54,25 @@ def read_recommendations(
         rec_item_name = (items_df[items_df['item_id'] == str(rec_item_id)+'.0'])[
             'title'].iloc[0]
         rec_item['rec_item_name'] = rec_item_name
+        rec_item['rec_item_imageURL'] = (items_df[items_df['item_id'] == str(
+            rec_item_id)+'.0'])['imageURL'].iloc[0]
+        # rec_item['rec_item_price'] = (items_df[items_df['item_id'] == str(
+        #     rec_item_id)+'.0'])['price'].iloc[0]
         explanations = []
 
         for exp_idx in range(exp_num):
-            explaination = {}
+            explanation = {}
             interaction_item_id = user_interaction[exp_idx]
             explanation_item_id, _ = sorted_explanation_scores[interaction_item_id]
-            explaination['item_id'] = explanation_item_id
-            explaination['interaction_type'] = 1
-            explaination['item_name'] = (items_df[items_df['item_id'] == str(
+            explanation['item_id'] = explanation_item_id
+            explanation['interaction_type'] = 1
+            explanation['item_name'] = (items_df[items_df['item_id'] == str(
                 explanation_item_id)+'.0'])['title'].iloc[0]
-            # items_df['item_id'] == '2'
-            explanations.append(explaination)
+            explanation['imageURL'] = (items_df[items_df['item_id'] == str(
+                explanation_item_id)+'.0'])['imageURL'].iloc[0]
+            # explanation['price'] = (items_df[items_df['item_id'] == str(
+            #     explanation_item_id)+'.0'])['price'].iloc[0]
+            explanations.append(explanation)
         rec_item['explanations'] = explanations
 
         recommendations.append(rec_item)

@@ -100,15 +100,22 @@ class ItemsOut(SQLModel):
     data: List[ItemOut]
     count: int
 
+
 class ExplainationOut(SQLModel):
     item_id: int
     interaction_type: InteractionType
     item_name: str
+    imageURL: str
+    # price: float
+
 
 class RecommendationOut(SQLModel):
     rec_item_id: int
     rec_item_name: str
+    rec_item_imageURL: str
+    # rec_item_price: float
     explanations: List[ExplainationOut]
+
 
 class RecommendationsOut(SQLModel):
     data: List[RecommendationOut]

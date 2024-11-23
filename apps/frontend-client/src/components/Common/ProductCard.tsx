@@ -12,6 +12,7 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
   IconButton,
+  Image,
 } from '@chakra-ui/react'
 import RocketIcon from './RocketIcon'
 import StarRating from './StarRating'
@@ -45,13 +46,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ recommendation }) => {
       p={4}
       shadow="md"
     >
-      <Box bg="gray.200" h="12" mb={4} borderRadius="md" />
-
+      <Image
+        src={recommendation.rec_item_imageURL}
+        alt="product"
+        h="48"
+        w="max-content"
+        objectFit="contain"
+      />
       <Box
         fontSize="xs"
         fontWeight="semibold"
         lineHeight="1.5em"
         minHeight="4.5em"
+        textOverflow="ellipsis"
+        noOfLines={3}
       >
         {recommendation.rec_item_name}
         <IconButton
